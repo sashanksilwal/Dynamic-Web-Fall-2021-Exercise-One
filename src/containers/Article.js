@@ -1,13 +1,58 @@
 import React from 'react'
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import Data from '../components/data.json';
 
-function Article(props){
-    let hello = "Hello Article"
+function Article() {
+
+    const [article, articleState] = useState({});
+
+    let { id } = useParams();
+
+    useEffect(() => {
+        const dataToSet = Data.find((item) => item.id === id)
+        articleState(dataToSet)
+
+    }, [id]);
+
+    const newDate = new Date(article.publishedDate);
+    const dateString = newDate.toDateString();
+
+    // if (!article) return null;
+    let bGround = {
+        backgroundImage: `url('${article.image && article.image.url}')`,
+        backgroundPosition: "center",
+        backgoundSize: "cover"
+
+    }
     return (
-        <div className="PageWrapper App">
-            <h1 >
-                {hello}
-            </h1>
-        </div>
+        <main>
+            <section className="ArticleHeader" style={bGround}>
+                <div className="ArticleHeaderText">
+                    <h1 className="HeaderOneStyle">{article.title}</h1>
+                    <p className="ArticleCardDate">{dateString}</p>
+                    <p className="ArticleBlurb">{article.blurb}</p>
+                </div>
+            </section>
+            <section className="ArticleText">
+                {article.articleText && article.articleText.map((text, i) => {
+                    const type = text.type;
+                    switch (type) {
+                        case 'p':
+                            return <p key={i}>{text.data}</p>
+                        case 'h2':
+                            return <h2 key={i}>{text.data}</h2>
+                        case 'h3':
+                            return <h3 key={i}>{text.data}</h3>
+                        default:
+                            return <p key={i}>{text.data}</p>
+                    }
+
+                })}
+
+
+            </section>
+        </main >
     );
 }
 
